@@ -1,0 +1,188 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Auth0 SAML SSO Integration Maker</title>
+  <meta name="description" content="Create a SAML JSON or YML file for Auth0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="SAML SSO Integration Maker">
+  <meta property="og:type" content="">
+  <meta property="og:url" content="">
+  <meta property="og:image" content="">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <link rel="stylesheet" href="css/tailwind.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+
+<body class="font-sans">
+
+  <header class="p-3">
+    <h1 class="text-3xl mb-4">SSO Integration Builder</h1>
+    <p>We are configuring Auth0 as a <a href="https://auth0.com/docs/protocols/saml-configuration-options/configure-auth0-as-saml-identity-provider">SAML Identity Provider</a>.</p>
+  </header>
+  <div class="w-6/12 p-3 float-left">
+    <h2 class="text-xl py-6">Options</h2>
+
+    <div class="mb-6">
+      <label for="callbacks" class="block mb-2">callbacks</label>
+      <textarea id="callbacks" name="callbacks" class="js-saml block w-full p-2" rows="4" required></textarea>
+      <p class="text-sm mt-2">Callback URLs to use, one per line.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="audience" class="block mb-2">audience</label>
+      <input type="text" id="audience" name="audience" class="js-saml block w-full p-2">
+      <p class="text-sm mt-2">The audience of the SAML Assertion. Default will be the Issuer on SAMLRequest.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="recipient" class="block mb-2">recipient</label>
+      <input type="text" id="recipient" name="recipient" class="js-saml block w-full p-2">
+      <p class="text-sm mt-2">The recipient of the SAML Assertion (SubjectConfirmationData). Default is AssertionConsumerUrl on SAMLRequest or Callback URL if no SAMLRequest was sent.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="mappings" class="block mb-2">mappings</label>
+      <textarea id="mappings" name="mappings" class="js-saml block w-full p-2" rows="4"></textarea>
+      <p class="text-sm mt-2">The mappings between the <a href="https://auth0.com/docs/users/user-profile-structure#user-profile-attributes">Auth0 user profile</a> and the output attributes on the SAML Assertion. Each "name" (left side) represents the property name on the Auth0 user profile. Each "value" (right side) is the name (including namespace) for the resulting SAML attribute in the assertion. </p>
+    </div>
+
+    <div class="mb-6">
+      <label for="createUpnClaim" class="block mb-2">createUpnClaim</label>
+      <input type="checkbox" id="createUpnClaim" name="createUpnClaim" value="1" class="js-saml" checked>
+      <p class="text-sm mt-2">Whether or not a UPN claim should be created.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="passthroughClaimsWithNoMapping" class="block mb-2">passthroughClaimsWithNoMapping</label>
+      <input type="checkbox" id="passthroughClaimsWithNoMapping" name="passthroughClaimsWithNoMapping" value="1" class="js-saml" checked>
+      <p class="text-sm mt-2">If true, for each claim that is not mapped to the <a href="https://auth0.com/docs/user-profile">common profile</a>, Auth0 will passthrough those in the output assertion. If false, those claims won't be mapped.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="mapUnknownClaimsAsIs" class="block mb-2">mapUnknownClaimsAsIs</label>
+      <input type="checkbox" id="mapUnknownClaimsAsIs" name="mapUnknownClaimsAsIs" value="1" class="js-saml">
+      <p class="text-sm mt-2">If passthroughClaimsWithNoMapping is true and this is false, for each claim that is not mapped to the <a href="https://auth0.com/docs/user-profile">common profile</a> Auth0 will add a prefix <code>http://schema.auth0.com</code>. If true it will passthrough the claim as-is.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="mapIdentities" class="block mb-2">mapIdentities</label>
+      <input type="checkbox" id="mapIdentities" name="mapIdentities" value="1" class="js-saml" checked>
+      <p class="text-sm mt-2">If true, it will will add more information in the token like the provider used (google, adfs, ad, etc.) and the access_token if available.</p>
+    </div>
+
+    <div class="mb-6">
+      <label class="block mb-2">signatureAlgorithm</label>
+      <label for="signatureAlgorithm-1">
+        <input type="radio" id="signatureAlgorithm-1" name="signatureAlgorithm" value="rsa-sha1" class="js-saml" checked> rsa-sha1
+      </label>
+      <label for="signatureAlgorithm-2">
+        <input type="radio" id="signatureAlgorithm-2" name="signatureAlgorithm" value="rsa-sha256" class="js-saml"> rsa-sha256
+      </label>
+      <p class="text-sm mt-2">Signature algorithm to sign the SAML Assertion or response.</p>
+    </div>
+
+    <div class="mb-6">
+      <label class="block mb-2">digestAlgorithm</label>
+      <label for="digestAlgorithm-1">
+        <input type="radio" id="digestAlgorithm-1" name="digestAlgorithm" value="sha1" class="js-saml" checked> sha1
+      </label>
+      <label for="digestAlgorithm-2">
+        <input type="radio" id="digestAlgorithm-2" name="digestAlgorithm" value="sha256" class="js-saml"> sha256
+      </label>
+      <p class="text-sm mt-2">Digest algorithm to calculate digest of the SAML Assertion or response.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="destination" class="block mb-2">destination</label>
+      <input type="text" id="destination" name="destination" class="js-saml block w-full p-2">
+      <p class="text-sm mt-2">Destination of the SAML Response. If not specified, it will be AssertionConsumerUrlof SAMLRequest or Callback URL if there was no SAMLRequest.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="lifetimeInSeconds" class="block mb-2">lifetimeInSeconds</label>
+      <input type="number" id="lifetimeInSeconds" name="lifetimeInSeconds" class="js-saml block w-full p-2" value="3600">
+      <p class="text-sm mt-2">Expiration of the token, in seconds.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="signResponse" class="block mb-2">signResponse</label>
+      <input type="checkbox" id="signResponse" name="signResponse" value="1" class="js-saml" checked>
+      <p class="text-sm mt-2">Whether or not the SAML Response should be signed. By default the SAML Assertion will be signed, but not the SAML Response. If true, SAML Response will be signed instead of SAML Assertion.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="nameIdentifierFormat" class="block mb-2">nameIdentifierFormat</label>
+      <input type="text" id="nameIdentifierFormat" name="nameIdentifierFormat" class="js-saml block w-full p-2" value="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">
+      <p class="text-sm mt-2">Format of the name identifier.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="nameIdentifierProbes" class="block mb-2">nameIdentifierProbes</label>
+      <textarea id="nameIdentifierProbes" name="nameIdentifierProbes" class="js-saml block w-full p-2" rows="4">http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier&#13;http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress&#13;http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name</textarea>
+      <p class="text-sm mt-2">Add each new attribute on its own line. Auth0 will try each of the attributes in the order displayed. If one of them has a value, it will use that for the Subject/NameID.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="authnContextClassRef" class="block mb-2">authnContextClassRef</label>
+      <input type="text" id="authnContextClassRef" name="authnContextClassRef" class="js-saml block w-full p-2" value="urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified">
+      <p class="text-sm mt-2">Format of the name identifier.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="typedAttributes" class="block mb-2">typedAttributes</label>
+      <input type="checkbox" id="typedAttributes" name="typedAttributes" value="1" class="js-saml" checked>
+      <p class="text-sm mt-2">When set to true, we infer the <code>xs:type</code> of the element. Types are <code>xs:string</code>, <code>xs:boolean</code>, <code>xs:double</code> and <code>xs:anyType</code>. When set to false all xs:type are xs:anyType.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="includeAttributeNameFormat" class="block mb-2">includeAttributeNameFormat</label>
+      <input type="checkbox" id="includeAttributeNameFormat" name="includeAttributeNameFormat" class="js-saml" value="1" checked>
+      <p class="text-sm mt-2">When set to true, we infer the NameFormat based on the attribute name. NameFormat values are <code>urn:oasis:names:tc:SAML:2.0:attrname-format:uri</code>, <code>urn:oasis:names:tc:SAML:2.0:attrname-format:basic</code>, and <code>urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified</code>. If set to false, the attribute NameFormat is not set in the assertion.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="logout.callback" class="block mb-2">logout.callback</label>
+      <input type="url" id="logout.callback" name="logout.callback" class="js-saml block w-full p-2">
+      <p class="text-sm mt-2">The service provider's Single Logout Service URL where Auth0 will send logout requests and responses.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="logout.slo_enabled" class="block mb-2">logout.slo_enabled</label>
+      <input type="checkbox" id="logout.slo_enabled" name="logout.slo_enabled" value="1" class="js-saml" checked>
+      <p class="text-sm mt-2">Controls whether Auth0 should notify service providers of session termination. True will notify the service provider (Auth0) when a user logs out of the application.</p>
+    </div>
+
+    <div class="mb-6">
+      <label for="binding" class="block mb-2">binding</label>
+      <input type="text" id="logoutCallback" name="logoutCallback" class="js-saml block w-full p-2">
+      <p class="text-sm mt-2">Optionally indicates the protocol binding used for SAML logout responses. By default Auth0 uses HTTP-POST, but you can switch to HTTP-Redirect by setting this to <code>urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect</code></p>
+    </div>
+
+    <div class="mb-6">
+      <label for="signingCert" class="block mb-2">signingCert</label>
+      <textarea id="signingCert" name="signingCert" class="js-saml block w-full p-2" rows="4"></textarea>
+      <p class="text-sm mt-2">Optionally indicates the public key certificate used to validate SAML requests. If set, SAML requests will be required to be signed.</p>
+    </div>
+  </div>
+
+  <div class="w-5/12 p-3 float-right" id="sidebar">
+    <h2 class="text-xl py-5">JSON <svg width="16" height="16" viewBox="0 0 20 20" id="js-copy-json"><path d="M17 14H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1zm0-10.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-9zm-14 4v9a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V15h1v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h2v1H3.5a.5.5 0 0 0-.5.5z"></path></svg></h2>
+    <p class="mb-2 text-sm">Use the content below to create a test Application with a SAML Add-On. Make sure to manually add the callbacks field to the Application settings.</p>
+    <textarea class="block w-full p-2" rows="20" id="json-output"></textarea>
+    <h2 class="text-xl py-5">YML <svg width="16" height="16" viewBox="0 0 20 20" id="js-copy-yml"><path d="M17 14H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1zm0-10.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-9zm-14 4v9a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V15h1v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h2v1H3.5a.5.5 0 0 0-.5.5z"></path></svg></h2>
+    <p class="mb-2 text-sm">Use the content below to submit the integration to the Marketplace.</p>
+    <textarea class="block w-full p-2" rows="20" id="yml-output"></textarea>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.0.0/js-yaml.min.js" integrity="sha512-dYHhQSvQ3Lepc2xDidh80aADfrIAaVTs52W5JSFlE47SJgcwD+YY+iY0XmXD9UX3k0YOPvoyugS/ieGjpu5M/Q==" crossorigin="anonymous"></script>
+  <script src="js/vendor/modernizr-3.11.2.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

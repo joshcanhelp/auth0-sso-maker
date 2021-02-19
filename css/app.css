@@ -1,0 +1,38 @@
+body {
+  background-color: #f0f3f4;
+}
+
+a {
+  color: #0b84fe;
+  text-decoration: underline;
+}
+
+code {
+  font-family: monospace;
+  background-color: #e5e8e9;
+  font-size: 1.2em;
+}
+
+label {
+  font-weight: bold;
+}
+
+input, textarea {
+  font-family: monospace;
+  font-size: 1.1em;
+  border: 1px solid #e5e8e9;
+}
+
+svg {
+  display: inline-block;
+}
+
+.sticky {
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+.error {
+  border: 1px solid red;
+}
